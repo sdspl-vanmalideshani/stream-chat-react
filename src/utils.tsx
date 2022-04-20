@@ -6,6 +6,7 @@ import findAndReplace from 'mdast-util-find-and-replace';
 import RootReactMarkdown, { NodeType } from 'react-markdown';
 import ReactMarkdown from 'react-markdown/with-html';
 import uniqBy from 'lodash.uniqby';
+export { v4 as generateRandomId } from 'uuid';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -45,14 +46,13 @@ export const matchMarkdownLinks = (message: string) => {
   const matches = message.match(regexMdLinks);
   const singleMatch = /\[([^[]+)\]\((.*)\)/;
 
-  const links = matches
-    ? matches.map((match) => {
-        const i = singleMatch.exec(match);
-        return i && [i[1], i[2]];
-      })
-    : [];
+  const links =
+    matches?.flatMap((match) => {
+      const i = singleMatch.exec(match);
+      return i && [i[1], i[2]];
+    }) ?? [];
 
-  return links.flat();
+  return links;
 };
 
 export const messageCodeBlocks = (message: string) => {
@@ -175,7 +175,7 @@ export const renderText = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics
 >(
   text?: string,
-  mentioned_users?: UserResponse<StreamChatGenerics>[],
+  mentionedUsers?: UserResponse<StreamChatGenerics>[],
   options: RenderTextOptions = {},
 ) => {
   // take the @ mentions and turn them into markdown?
@@ -191,18 +191,16 @@ export const renderText = <
     const linkIsInBlock = codeBlocks.some((block) => block?.includes(value));
 
     // check if message is already  markdown
-    const noParsingNeeded =
-      markdownLinks &&
-      markdownLinks.filter((text) => {
-        const strippedHref = href?.replace(detectHttp, '');
-        const strippedText = text?.replace(detectHttp, '');
+    const noParsingNeeded = markdownLinks?.filter((text) => {
+      const strippedHref = href?.replace(detectHttp, '');
+      const strippedText = text?.replace(detectHttp, '');
 
-        if (!strippedHref || !strippedText) return false;
+      if (!strippedHref || !strippedText) return false;
 
-        return strippedHref.includes(strippedText) || strippedText.includes(strippedHref);
-      });
+      return strippedHref.includes(strippedText) || strippedText.includes(strippedHref);
+    });
 
-    if (noParsingNeeded.length > 0 || linkIsInBlock) return;
+    if (noParsingNeeded.length || linkIsInBlock) return;
 
     try {
       const displayLink = type === 'email' ? value : formatUrlForDisplay(href);
@@ -218,8 +216,8 @@ export const renderText = <
 
   const plugins = [emojiMarkdownPlugin];
 
-  if (mentioned_users?.length) {
-    plugins.push(mentionsMarkdownPlugin(mentioned_users));
+  if (mentionedUsers?.length) {
+    plugins.push(mentionsMarkdownPlugin(mentionedUsers));
   }
 
   const renderers = {
@@ -245,16 +243,6 @@ export const renderText = <
 
 export function escapeRegExp(text: string) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&');
-}
-
-function S4() {
-  return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-}
-
-// https://stackoverflow.com/a/6860916/2570866
-export function generateRandomId() {
-  // prettier-ignore
-  return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charAt#getting_whole_characters
