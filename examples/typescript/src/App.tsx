@@ -56,7 +56,7 @@ type StreamChatGenerics = {
 
 const makeCancellable = <T extends (...functionArguments: any) => any>(
   functionToCancel: T,
-  delay = 100,
+  delay = 200,
 ) => {
   let timeout: NodeJS.Timeout | null = null;
 
@@ -75,12 +75,9 @@ const makeCancellable = <T extends (...functionArguments: any) => any>(
   };
 
   const cancel = () => {
-    if (timeout === null) {
-      return false;
-    }
+    if (timeout === null) return;
     clearTimeout(timeout);
     timeout = null;
-    return true;
   };
 
   return [cancel, start] as const;
@@ -100,20 +97,19 @@ const useClient_closure = <SCG extends ExtendableGenerics = DefaultGenerics>({
   useEffect(() => {
     const client = new StreamChat<SCG>(apiKey);
 
-    let doSetClient = true;
+    let didUserConnectInterrupt = false;
     const connectionPromise = client.connectUser(userData, tokenOrProvider).then((d) => {
-      if (doSetClient) setChatClient(client);
+      if (!didUserConnectInterrupt) setChatClient(client);
     });
 
     return () => {
-      doSetClient = false;
-      connectionPromise.then(() => {
-        setChatClient(null);
-
-        client.disconnectUser().then(() => {
+      didUserConnectInterrupt = true;
+      setChatClient(null);
+      connectionPromise
+        .then(() => client.disconnectUser())
+        .then(() => {
           console.log('connection closed');
         });
-      });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, userData.id, tokenOrProvider]);
@@ -135,20 +131,24 @@ const useClient_cancelable = <SCG extends ExtendableGenerics = DefaultGenerics>(
   useEffect(() => {
     const client = new StreamChat<SCG>(apiKey);
 
+    let didUserConnectInterrupt = false;
     const [cancel, start] = makeCancellable(client.connectUser);
-    start(userData, tokenOrProvider).then((d) => {
-      setChatClient(client);
+    const connectionPromise = start(userData, tokenOrProvider).then((d) => {
+      // in case user missed cancelation timeout
+      // but the connection is still in progress
+      if (!didUserConnectInterrupt) setChatClient(client);
+      console.log('setting client');
     });
 
     return () => {
-      const cancelled = cancel();
-
-      if (cancelled) return;
-
+      cancel();
+      didUserConnectInterrupt = true;
       setChatClient(null);
-      client.disconnectUser().then(() => {
-        console.log('connection closed');
-      });
+      connectionPromise
+        .then(() => client.disconnectUser())
+        .then(() => {
+          console.log('connection closed');
+        });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, userData.id, tokenOrProvider]);
@@ -179,8 +179,13 @@ const users = [
 const options: ChannelOptions = { state: true, presence: true, limit: 10 };
 const sort: ChannelSort = { last_message_at: -1, updated_at: -1 };
 
+// const c = StreamChat.getInstance(apiKey);
+
+// const [[userId, userToken]] = users;
+
 const App = () => {
   const [userIndex, setUserIndex] = useState(0);
+  const [connected, setConnected] = useState(false);
 
   const [userId, userToken] = users[userIndex];
 
@@ -194,7 +199,15 @@ const App = () => {
 
   return (
     <>
-      <button onClick={() => setUserIndex((ui) => (ui === users.length - 1 ? 0 : ++ui))}>
+      <button
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          zIndex: 1,
+        }}
+        onClick={() => setUserIndex((ui) => (ui === users.length - 1 ? 0 : ++ui))}
+      >
         cycle users
       </button>
       {client && (
