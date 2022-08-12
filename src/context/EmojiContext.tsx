@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useContext } from 'react';
 //@ts-expect-error
 import DefaultEmojiIndex from 'emoji-mart/dist/utils/emoji-index/nimble-emoji-index.js';
+import { NimbleEmoji as DefaultEmoji, NimblePicker as DefaultEmojiPicker } from 'emoji-mart';
 
 import type {
   Data as EmojiMartData,

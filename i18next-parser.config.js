@@ -10,5 +10,5 @@ module.exports = {
     return a < b ? -1 : 1; // alfabetical order
   },
   useKeysAsDefaultValue: true,
-  verbose: true,
+  verbose: false,
 };

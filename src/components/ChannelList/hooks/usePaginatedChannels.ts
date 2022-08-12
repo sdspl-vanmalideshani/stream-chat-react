@@ -9,7 +9,7 @@ import { useChatContext } from '../../../context/ChatContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const usePaginatedChannels = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   client: StreamChat<StreamChatGenerics>,
   filters: ChannelFilters<StreamChatGenerics>,
@@ -62,7 +62,7 @@ export const usePaginatedChannels = <
       }
     } catch (err) {
       console.warn(err);
-      setError(err);
+      setError(err as Error);
     }
 
     setQueryInProgress(null);
