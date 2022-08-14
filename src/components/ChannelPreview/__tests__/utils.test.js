@@ -10,7 +10,7 @@ import {
   getOrCreateChannelApi,
   getTestClientWithUser,
   useMockedApis,
-} from 'mock-builders';
+} from '../../../mock-builders';
 
 import { getDisplayImage, getDisplayTitle, getLatestMessagePreview } from '../utils';
 

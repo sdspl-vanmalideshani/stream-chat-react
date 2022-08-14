@@ -1,6 +1,7 @@
+import { vi } from 'vitest';
 import { getDateString } from '../utils';
 
-jest.spyOn(console, 'warn').mockImplementationOnce(() => null);
+vi.spyOn(console, 'warn').mockImplementationOnce(() => null);
 const messageCreatedAt = '1970-01-01T01:01:01.001Z';
 
 describe('getDateString', () => {
@@ -16,7 +17,7 @@ describe('getDateString', () => {
     ).toBeNull();
   });
   it('returns null if creation date string is incorrectly formatted', () => {
-    jest.spyOn(console, 'warn').mockImplementationOnce(() => null);
+    vi.spyOn(console, 'warn').mockImplementationOnce(() => null);
     expect(
       getDateString({
         calendar: true,
@@ -28,7 +29,7 @@ describe('getDateString', () => {
     ).toBeNull();
   });
   it('returns null if neither datetime formatter nor custom formatting function are provided', () => {
-    jest.spyOn(console, 'warn').mockImplementationOnce(() => null);
+    vi.spyOn(console, 'warn').mockImplementationOnce(() => null);
     expect(
       getDateString({
         calendar: true,
@@ -41,7 +42,7 @@ describe('getDateString', () => {
   });
   it('returns a date string formatted with custom formatter function', () => {
     const expectedValue = 'expected';
-    const formatDateMock = jest.fn().mockReturnValue(expectedValue);
+    const formatDateMock = vi.fn().mockReturnValue(expectedValue);
     expect(
       getDateString({
         calendar: true,

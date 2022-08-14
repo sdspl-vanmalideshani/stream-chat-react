@@ -1,3 +1,5 @@
+import { vi } from 'vitest';
+
 /**
  * Hook to mock the calls made through axios module.
  * You should provide the responses of Apis in order that they will be called.
@@ -9,7 +11,7 @@
  */
 export const useMockedApis = (client, apiResponses) => {
   apiResponses.forEach(({ response, type }) => {
-    jest.spyOn(client.axiosInstance, type).mockImplementation().mockResolvedValue(response);
+    vi.spyOn(client.axiosInstance, type).mockImplementation().mockResolvedValue(response);
   });
 };
 

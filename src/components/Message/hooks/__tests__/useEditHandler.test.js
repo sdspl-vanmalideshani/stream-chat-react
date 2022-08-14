@@ -1,8 +1,10 @@
 import { act, renderHook } from '@testing-library/react-hooks';
+import { vi } from 'vitest';
+
 import { useEditHandler } from '../useEditHandler';
 
 const mouseEventMock = {
-  preventDefault: jest.fn(() => {}),
+  preventDefault: vi.fn(() => {}),
 };
 
 function renderUseEditHandler(
@@ -17,7 +19,7 @@ function renderUseEditHandler(
 }
 
 describe('useEditHandler custom hook', () => {
-  afterEach(jest.clearAllMocks);
+  afterEach(vi.clearAllMocks);
   it('should generate an editing state, a function to set it and a function to delete it', () => {
     const renderedHook = renderUseEditHandler();
     expect(renderedHook.current.editing).toBe(false);
@@ -44,7 +46,7 @@ describe('useEditHandler custom hook', () => {
   });
 
   it('should call the custom editing handler when one is set', () => {
-    const customSetEditingHandler = jest.fn();
+    const customSetEditingHandler = vi.fn();
     const renderedHook = renderUseEditHandler(undefined, customSetEditingHandler);
     expect(customSetEditingHandler).not.toHaveBeenCalled();
     act(() => renderedHook.current.setEdit(mouseEventMock));
@@ -65,7 +67,7 @@ describe('useEditHandler custom hook', () => {
   });
 
   it('should call the custom clear editing handler when one is set', () => {
-    const customClearEditingHandler = jest.fn();
+    const customClearEditingHandler = vi.fn();
     const renderedHook = renderUseEditHandler(undefined, undefined, customClearEditingHandler);
     expect(customClearEditingHandler).not.toHaveBeenCalled();
     act(() => renderedHook.current.clearEdit(mouseEventMock));

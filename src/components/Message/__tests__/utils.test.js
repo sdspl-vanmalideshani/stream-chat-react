@@ -1,4 +1,4 @@
-import { generateMessage, generateReaction, generateUser } from 'mock-builders';
+import { generateMessage, generateReaction, generateUser } from '../../../mock-builders';
 import { getTestClientWithUser, mockTranslatorFunction } from '../../../mock-builders';
 import {
   areMessagePropsEqual,

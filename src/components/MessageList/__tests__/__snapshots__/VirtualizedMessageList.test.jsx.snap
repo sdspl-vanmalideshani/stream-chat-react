@@ -1,0 +1,49 @@
+// Vitest Snapshot v1
+
+exports[`VirtualizedMessageList > should render the list without any message 1`] = `
+<div
+  className="str-chat str-chat-channel messaging light "
+>
+  <div
+    className="str-chat__container"
+  >
+    <div
+      className="str-chat__virtual-list"
+    >
+      <div
+        data-test-id="virtuoso-scroller"
+        data-virtuoso-scroller={true}
+        style={
+          {
+            "WebkitOverflowScrolling": "touch",
+            "height": "100%",
+            "outline": "none",
+            "overflowX": "hidden",
+            "overflowY": "auto",
+            "position": "relative",
+          }
+        }
+        tabIndex={0}
+      >
+        <div
+          data-viewport-type="element"
+          style={
+            {
+              "height": "100%",
+              "position": "absolute",
+              "top": 0,
+              "width": "100%",
+            }
+          }
+        >
+          <div />
+          <div />
+        </div>
+      </div>
+    </div>
+    <div
+      className="str-chat__list-notifications"
+    />
+  </div>
+</div>
+`;
