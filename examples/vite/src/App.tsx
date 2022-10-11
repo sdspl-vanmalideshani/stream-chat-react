@@ -8,6 +8,7 @@ import {
   MessageInput,
   MessageList,
   Thread,
+  useChannelStateContext,
   Window,
 } from 'stream-chat-react';
 import '@stream-io/stream-chat-css/dist/v2/css/index.css';
@@ -50,10 +51,17 @@ if (import.meta.env.VITE_CHAT_SERVER_ENDPOINT) {
 
 chatClient.connectUser({ id: userId }, userToken);
 
+const UnbanButton = () => {
+  const { channel } = useChannelStateContext();
+
+  return <button onClick={() => channel.unbanUser('mark')}>Unban mark</button>;
+};
+
 const App = () => (
   <Chat client={chatClient}>
     <ChannelList filters={filters} options={options} showChannelSearch sort={sort} />
     <Channel>
+      <UnbanButton />
       <Window>
         <ChannelHeader />
         <MessageList />
