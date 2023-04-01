@@ -3,7 +3,7 @@ import { Navigation } from './components/Navigation/Navigation';
 import { CentralPanel } from './components/CentralPanel/CentralPanel';
 import { EventProvider } from './contexts/EventContext';
 import { VideoProvider } from './contexts/VideoContext';
-
+// test
 export const App = () => {
   return (
     <div className='app-container'>
